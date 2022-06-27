@@ -71,10 +71,7 @@ var _ = Describe("AdvProductRepository", func() {
 				Expect(e).ShouldNot(HaveOccurred())
 				Expect(res.Status).Should(Equal("ok"))
 
-				payload = &bytes.Buffer{}
-				payload.WriteString("id=1")
-
-				r = httptest.NewRequest(http.MethodGet, "/suggest", payload)
+				r = httptest.NewRequest(http.MethodGet, "/suggest/1", nil)
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				w = httptest.NewRecorder()
 
@@ -94,8 +91,6 @@ var _ = Describe("AdvProductRepository", func() {
 
 		When("get all", func() {
 			It("Success", func() {
-				//post suggest
-
 				payload := &bytes.Buffer{}
 
 				payload.WriteString("link=abc&title=NAME&query=a&query=b&query=c")
@@ -119,8 +114,6 @@ var _ = Describe("AdvProductRepository", func() {
 				e = json.Unmarshal(w.Body.Bytes(), &res)
 				Expect(e).ShouldNot(HaveOccurred())
 				Expect(res.Status).Should(Equal("ok"))
-
-				// get all
 
 				r = httptest.NewRequest(http.MethodGet, "/suggest", nil)
 				w = httptest.NewRecorder()
@@ -168,7 +161,7 @@ var _ = Describe("AdvProductRepository", func() {
 				Expect(res.Status).Should(Equal("ok"))
 			})
 		})
-		
+
 		When("import", func() {
 			It("Success", func() {
 				payload := &bytes.Buffer{}
@@ -200,6 +193,26 @@ var _ = Describe("AdvProductRepository", func() {
 				e = json.Unmarshal(w.Body.Bytes(), &suggests)
 				Expect(e).ShouldNot(HaveOccurred())
 				Expect(len(suggests)).Should(Equal(5))
+			})
+		})
+
+		When("add one without args", func() {
+			It("Success", func() {
+				payload := &bytes.Buffer{}
+				payload.WriteString("")
+
+				r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
+				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				w := httptest.NewRecorder()
+
+				post(w, r)
+
+				res := &repo.Status{}
+				e := json.Unmarshal(w.Body.Bytes(), &res)
+
+				Expect(e).ShouldNot(HaveOccurred())
+				Expect(res.Status).Should(Equal("no args"))
+
 			})
 		})
 	})
