@@ -2,9 +2,8 @@ package server
 
 import (
 	"context"
+
 	pb "github.com/JekaTatsiy/grpc-market/suggest_proto"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 )
 
 func (s *GServer) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchResponse, error) {
@@ -14,20 +13,34 @@ func (s *GServer) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchR
 }
 
 func (s *GServer) AddOne(context.Context, *pb.SuggestRequest) (*pb.Status, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddOne not implemented")
+	stat := &pb.Status{Msg: "ok"}
+	return stat, nil
 }
+
 func (s *GServer) AddFile(context.Context, *pb.CSV) (*pb.Status, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddFile not implemented")
+	stat := &pb.Status{Msg: "ok"}
+	return stat, nil
 }
+
 func (s *GServer) GetOne(context.Context, *pb.SuggestRequestIndex) (*pb.SuggestResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOne not implemented")
+	r := &pb.SuggestResponse{ID: 0, LinkUrl: "l", Title: "t", Queries: []string{"a"}, Active: true}
+
+	return r, nil
 }
-func (s *GServer) Get(context.Context, *pb.Empty) (*pb.SuggestResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+
+func (s *GServer) Get(context.Context, *pb.Empty) (*pb.SuggestResponseArray, error) {
+	r := &pb.SuggestResponseArray{
+		Suggests: []*pb.SuggestResponse{{ID: 1, LinkUrl: "l", Title: "t", Queries: []string{"a"}, Active: true}},
+	}
+	return r, nil
 }
+
 func (s *GServer) DeleteOne(context.Context, *pb.SuggestRequestIndex) (*pb.Status, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteOne not implemented")
+	stat := &pb.Status{Msg: "ok"}
+	return stat, nil
 }
+
 func (s *GServer) Delete(context.Context, *pb.Empty) (*pb.Status, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+	stat := &pb.Status{Msg: "ok"}
+	return stat, nil
 }

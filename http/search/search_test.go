@@ -27,7 +27,7 @@ var _ = Describe("HTTPSearch", func() {
 
 	g := server.NewGrpcClient("1000")
 
-	find := repo.Find()
+	find := repo.Find(g)
 
 	BeforeSuite(func() {
 		post := sugg.Post(g)

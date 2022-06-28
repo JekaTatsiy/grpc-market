@@ -15,10 +15,9 @@ type GServer struct {
 	pb.UnimplementedSuggestServiceServer
 }
 
-
 func NewServer(port string) *Server {
 	s := &Server{}
-	lis, err := net.Listen("tcp", port)
+	lis, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		fmt.Printf("failed to listen: %v\n", err)
 		return nil

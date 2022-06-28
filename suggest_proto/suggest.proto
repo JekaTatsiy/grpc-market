@@ -3,6 +3,7 @@ syntax = "proto3";
 option go_package = "/suggest";
 package suggest;
 
+//search
 message SearchRequest {
   string query = 1;
 }
@@ -11,19 +12,27 @@ message SearchResponse {
     repeated SuggestResponse suggests = 1;
 }
 
+//suggest send
 message SuggestRequest {
     string LinkUrl = 1 ;
     string Title = 2 ;
     repeated string Queries = 3 ;
 }
-
-message SuggestRequestArray {
-    repeated SuggestRequest Suggests = 1 ;
-}
-
 message SuggestRequestIndex {
     int32 Index = 1 ;
 }
+message CSV {
+    string text = 1;
+}
+
+message Empty{
+}
+
+// suggest receive
+message SuggestResponseArray {
+    repeated SuggestResponse Suggests = 1 ;
+}
+
 
 message SuggestResponse {
     int32 ID = 1;
@@ -36,12 +45,6 @@ message SuggestResponse {
 message Status {
     string msg = 1;
 }
-message CSV {
-    string text = 1;
-}
-
-message Empty{
-}
 
 service SuggestService {
     rpc Search(SearchRequest) returns (SearchResponse);
@@ -50,7 +53,7 @@ service SuggestService {
     rpc AddFile(CSV) returns (Status);
 
     rpc GetOne(SuggestRequestIndex) returns (SuggestResponse);
-    rpc Get(Empty) returns (SuggestResponse);
+    rpc Get(Empty) returns (SuggestResponseArray);
 
     rpc DeleteOne(SuggestRequestIndex) returns (Status);
     rpc Delete(Empty) returns (Status);    

@@ -16,7 +16,7 @@ type Server struct {
 }
 
 func NewGrpcClient(port string) pb.SuggestServiceClient {
-	conn, err := grpc.Dial(port, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(":"+port, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		fmt.Printf("did not connect: %v", err)
 		return nil

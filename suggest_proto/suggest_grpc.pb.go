@@ -26,7 +26,7 @@ type SuggestServiceClient interface {
 	AddOne(ctx context.Context, in *SuggestRequest, opts ...grpc.CallOption) (*Status, error)
 	AddFile(ctx context.Context, in *CSV, opts ...grpc.CallOption) (*Status, error)
 	GetOne(ctx context.Context, in *SuggestRequestIndex, opts ...grpc.CallOption) (*SuggestResponse, error)
-	Get(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SuggestResponse, error)
+	Get(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SuggestResponseArray, error)
 	DeleteOne(ctx context.Context, in *SuggestRequestIndex, opts ...grpc.CallOption) (*Status, error)
 	Delete(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Status, error)
 }
@@ -75,8 +75,8 @@ func (c *suggestServiceClient) GetOne(ctx context.Context, in *SuggestRequestInd
 	return out, nil
 }
 
-func (c *suggestServiceClient) Get(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SuggestResponse, error) {
-	out := new(SuggestResponse)
+func (c *suggestServiceClient) Get(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SuggestResponseArray, error) {
+	out := new(SuggestResponseArray)
 	err := c.cc.Invoke(ctx, "/suggest.SuggestService/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ type SuggestServiceServer interface {
 	AddOne(context.Context, *SuggestRequest) (*Status, error)
 	AddFile(context.Context, *CSV) (*Status, error)
 	GetOne(context.Context, *SuggestRequestIndex) (*SuggestResponse, error)
-	Get(context.Context, *Empty) (*SuggestResponse, error)
+	Get(context.Context, *Empty) (*SuggestResponseArray, error)
 	DeleteOne(context.Context, *SuggestRequestIndex) (*Status, error)
 	Delete(context.Context, *Empty) (*Status, error)
 	mustEmbedUnimplementedSuggestServiceServer()
@@ -132,7 +132,7 @@ func (UnimplementedSuggestServiceServer) AddFile(context.Context, *CSV) (*Status
 func (UnimplementedSuggestServiceServer) GetOne(context.Context, *SuggestRequestIndex) (*SuggestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOne not implemented")
 }
-func (UnimplementedSuggestServiceServer) Get(context.Context, *Empty) (*SuggestResponse, error) {
+func (UnimplementedSuggestServiceServer) Get(context.Context, *Empty) (*SuggestResponseArray, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedSuggestServiceServer) DeleteOne(context.Context, *SuggestRequestIndex) (*Status, error) {
