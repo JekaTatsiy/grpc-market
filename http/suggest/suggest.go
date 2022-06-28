@@ -3,6 +3,7 @@ package suggest
 import (
 	"net/http"
 
+	pb "github.com/JekaTatsiy/grpc-market/suggest_proto"
 	"github.com/gorilla/mux"
 )
 
@@ -20,48 +21,45 @@ type Status struct {
 
 const searchService = "172.20.0.1:1000"
 
-func GetAll() http.HandlerFunc {
+func GetAll(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("get all"))
 	}
 }
 
-func Get() http.HandlerFunc {
+func Get(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		v := mux.Vars(r)
 		w.Write([]byte("get " + v["id"]))
 	}
 }
 
-func Post() http.HandlerFunc {
+func Post(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("post"))
 	}
 }
 
-func Import() http.HandlerFunc{
+func Import(grpcClient pb.SuggestServiceClient) http.HandlerFunc{
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("import"))
 	}
 }
 
-func DeleteOne() http.HandlerFunc {
+func DeleteOne(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("delete one"))
 	}
 }
-
-func Delete() http.HandlerFunc {
+func Delete(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("delete"))
 	}
 }
-
-
-func GenRouting(r *mux.Router) {
-	r.HandleFunc("/suggest", GetAll()).Methods(http.MethodGet)
-	r.HandleFunc("/suggest/{id:[/d]+}", Get()).Methods(http.MethodGet)
-	r.HandleFunc("/suggest", Post()).Methods(http.MethodPost)
-	r.HandleFunc("/suggest", Delete()).Methods(http.MethodDelete)
-	r.HandleFunc("/suggest/import", Import()).Methods(http.MethodPost)
+func GenRouting(r *mux.Router, grpcClient pb.SuggestServiceClient) {
+	r.HandleFunc("/suggest", GetAll(grpcClient)).Methods(http.MethodGet)
+	r.HandleFunc("/suggest/{id:[/d]+}", Get(grpcClient)).Methods(http.MethodGet)
+	r.HandleFunc("/suggest", Post(grpcClient)).Methods(http.MethodPost)
+	r.HandleFunc("/suggest", Delete(grpcClient)).Methods(http.MethodDelete)
+	r.HandleFunc("/suggest/import", Import(grpcClient)).Methods(http.MethodPost)
 }

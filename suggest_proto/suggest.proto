@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option go_package = "/suggest";
+package suggest;
+
+message SearchRequest {
+  string query = 1;
+}
+
+message SearchResponse {
+    repeated SuggestResponse suggests = 1;
+}
+
+message SuggestRequest {
+    string LinkUrl = 1 ;
+    string Title = 2 ;
+    repeated string Queries = 3 ;
+}
+
+message SuggestRequestArray {
+    repeated SuggestRequest Suggests = 1 ;
+}
+
+message SuggestRequestIndex {
+    int32 Index = 1 ;
+}
+
+message SuggestResponse {
+    int32 ID = 1;
+    string LinkUrl = 2 ;
+    string Title = 3 ;
+    repeated string Queries = 4 ;
+    bool Active = 5;
+}
+
+message Status {
+    string msg = 1;
+}
+message CSV {
+    string text = 1;
+}
+
+message Empty{
+}
+
+service SuggestService {
+    rpc Search(SearchRequest) returns (SearchResponse);
+
+    rpc AddOne(SuggestRequest) returns (Status);
+    rpc AddFile(CSV) returns (Status);
+
+    rpc GetOne(SuggestRequestIndex) returns (SuggestResponse);
+    rpc Get(Empty) returns (SuggestResponse);
+
+    rpc DeleteOne(SuggestRequestIndex) returns (Status);
+    rpc Delete(Empty) returns (Status);    
+}
+
