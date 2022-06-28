@@ -135,9 +135,9 @@ func Delete(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 }
 func GenRouting(r *mux.Router, grpcClient pb.SuggestServiceClient) {
 	r.HandleFunc("/suggest", GetAll(grpcClient)).Methods(http.MethodGet)
-	r.HandleFunc("/suggest/{id:[/d]+}", Get(grpcClient)).Methods(http.MethodGet)
+	r.HandleFunc("/suggest/{id:[0-9]+}", Get(grpcClient)).Methods(http.MethodGet)
 	r.HandleFunc("/suggest", Post(grpcClient)).Methods(http.MethodPost)
 	r.HandleFunc("/suggest", Delete(grpcClient)).Methods(http.MethodDelete)
-	r.HandleFunc("/suggest/{id:[/d]+}", DeleteOne(grpcClient)).Methods(http.MethodDelete)
+	r.HandleFunc("/suggest/{id:[0-9]+}", DeleteOne(grpcClient)).Methods(http.MethodDelete)
 	r.HandleFunc("/suggest/import", Import(grpcClient)).Methods(http.MethodPost)
 }
