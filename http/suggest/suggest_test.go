@@ -14,14 +14,14 @@ import (
 	"github.com/onsi/gomega/format"
 )
 
-func TestAdvProductRepository(t *testing.T) {
+func TestHTTPSuggest(t *testing.T) {
 	format.MaxLength = 0
 
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "AdvProductRepository")
+	RunSpecs(t, "HTTPSuggest")
 }
 
-var _ = Describe("AdvProductRepository", func() {
+var _ = Describe("HTTPSuggest", func() {
 
 	getall := repo.GetAll()
 	get := repo.Get()

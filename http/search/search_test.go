@@ -15,30 +15,33 @@ import (
 	"github.com/onsi/gomega/format"
 )
 
-func TestAdvProductRepository(t *testing.T) {
+func TestHTTPSearch(t *testing.T) {
 	format.MaxLength = 0
 
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "AdvProductRepository")
+	RunSpecs(t, "HTTPSearch")
 }
 
-func NewSuggest(link, title string, queries []string) {
-	post := sugg.Post()
-
-	payload := &bytes.Buffer{}
-	payload.WriteString("link=abc&title=NAME&query=a&query=b&query=c")
-	r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
-	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	w := httptest.NewRecorder()
-	post(w, r)
-}
-
-var _ = Describe("AdvProductRepository", func() {
+var _ = Describe("HTTPSearch", func() {
 
 	find := repo.Find()
 
 	BeforeSuite(func() {
-		NewSuggest("abc", "name", []string{"a", "b", "c"})
+		post := sugg.Post()
+		payload := &bytes.Buffer{}
+		payload.WriteString("link=abc&title=NAME&query=автомобиль")
+		r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
+		r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		w := httptest.NewRecorder()
+		post(w, r)
+
+	})
+
+	AfterSuite(func() {
+		del := sugg.Delete()
+		r := httptest.NewRequest(http.MethodDelete, "/suggest", nil)
+		w := httptest.NewRecorder()
+		del(w, r)
 	})
 
 	Context("Public functions", func() {
