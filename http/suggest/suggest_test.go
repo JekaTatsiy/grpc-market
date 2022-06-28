@@ -8,6 +8,7 @@ import (
 
 	"encoding/json"
 
+	server "github.com/JekaTatsiy/grpc-market/http/server"
 	repo "github.com/JekaTatsiy/grpc-market/http/suggest"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -22,11 +23,13 @@ func TestHTTPSuggest(t *testing.T) {
 }
 
 var _ = Describe("HTTPSuggest", func() {
+	
+	g := server.NewGrpcClient("1000")
 
-	getall := repo.GetAll()
-	get := repo.Get()
-	post := repo.Post()
-	delete := repo.Delete()
+	getall := repo.GetAll(g)
+	get := repo.Get(g)
+	post := repo.Post(g)
+	delete := repo.Delete(g)
 
 	BeforeEach(func() {
 		r := httptest.NewRequest(http.MethodGet, "/suggest", nil)

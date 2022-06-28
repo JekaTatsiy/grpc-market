@@ -2,19 +2,21 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-
 	suggest "github.com/JekaTatsiy/grpc-market/http/suggest"
+
+	"github.com/JekaTatsiy/grpc-market/http/server"
 	"github.com/gorilla/mux"
 )
 
 func main() {
-
-	fmt.Println("http")
+	fmt.Println("start http server")
 
 	r := mux.NewRouter()
-	suggest.GenRouting(r)
 
-	server := http.Server{Addr: "0.0.0.0:3000", Handler: r}
-	server.ListenAndServe()
+	g := server.NewGrpcClient("1000")
+	suggest.GenRouting(r, g)
+
+	s := server.NewServer("3000", r, g)
+	s.HTTPServer.ListenAndServe()
+
 }

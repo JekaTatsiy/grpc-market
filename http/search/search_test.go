@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"encoding/json"
+	server "github.com/JekaTatsiy/grpc-market/http/server"
 
 	repo "github.com/JekaTatsiy/grpc-market/http/search"
 	sugg "github.com/JekaTatsiy/grpc-market/http/suggest"
@@ -24,10 +25,12 @@ func TestHTTPSearch(t *testing.T) {
 
 var _ = Describe("HTTPSearch", func() {
 
+	g := server.NewGrpcClient("1000")
+
 	find := repo.Find()
 
 	BeforeSuite(func() {
-		post := sugg.Post()
+		post := sugg.Post(g)
 		payload := &bytes.Buffer{}
 		payload.WriteString("link=abc&title=NAME&query=автомобиль")
 		r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
@@ -38,7 +41,7 @@ var _ = Describe("HTTPSearch", func() {
 	})
 
 	AfterSuite(func() {
-		del := sugg.Delete()
+		del := sugg.Delete(g)
 		r := httptest.NewRequest(http.MethodDelete, "/suggest", nil)
 		w := httptest.NewRecorder()
 		del(w, r)

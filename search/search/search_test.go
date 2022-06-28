@@ -6,16 +6,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/JekaTatsiy/grpc-market/http/server"
 	sugg "github.com/JekaTatsiy/grpc-market/http/suggest"
-	//"github.com/elastic/go-elasticsearch/v8"
-	//"github.com/elastic/go-elasticsearch/v8/esapi"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/format"
 )
 
 func NewSuggest(link, title string, queries []string) {
-	post := sugg.Post()
+	post := sugg.Post(server.NewGrpcClient("1000"))
 
 	payload := &bytes.Buffer{}
 	payload.WriteString("link=abc&title=NAME&query=a&query=b&query=c")
