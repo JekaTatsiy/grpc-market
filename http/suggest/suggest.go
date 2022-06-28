@@ -39,17 +39,24 @@ func Post() http.HandlerFunc {
 	}
 }
 
+func Import() http.HandlerFunc{
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("import"))
+	}
+}
+
+func DeleteOne() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("delete one"))
+	}
+}
+
 func Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("delete"))
 	}
 }
 
-func Import() http.HandlerFunc{
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("import"))
-	}
-}
 
 func GenRouting(r *mux.Router) {
 	r.HandleFunc("/suggest", GetAll()).Methods(http.MethodGet)

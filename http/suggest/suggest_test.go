@@ -26,6 +26,7 @@ var _ = Describe("HTTPSuggest", func() {
 	getall := repo.GetAll()
 	get := repo.Get()
 	post := repo.Post()
+	deleteone := repo.DeleteOne()
 	delete := repo.Delete()
 
 	BeforeEach(func() {
@@ -132,7 +133,7 @@ var _ = Describe("HTTPSuggest", func() {
 			})
 		})
 
-		When("delete all", func() {
+		When("delete", func() {
 			It("Success", func() {
 				payload := &bytes.Buffer{}
 
@@ -143,12 +144,32 @@ var _ = Describe("HTTPSuggest", func() {
 
 				post(w, r)
 
+				payload = &bytes.Buffer{}
+
+				payload.WriteString("link=xyz&title=ITEM&query=x&query=y&query=z")
+				r = httptest.NewRequest(http.MethodGet, "/suggest", payload)
+				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				w = httptest.NewRecorder()
+
+				post(w, r)
+
 				res := &repo.Status{}
 				e := json.Unmarshal(w.Body.Bytes(), &res)
 				Expect(e).ShouldNot(HaveOccurred())
 				Expect(res.Status).Should(Equal("ok"))
 
-				//delete
+				//delete one
+				r = httptest.NewRequest(http.MethodGet, "/suggest", nil)
+				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				w = httptest.NewRecorder()
+
+				deleteone(w, r)
+
+				res = &repo.Status{}
+				e = json.Unmarshal(w.Body.Bytes(), &res)
+				Expect(e).ShouldNot(HaveOccurred())
+				Expect(res.Status).Should(Equal("ok"))
+
 				r = httptest.NewRequest(http.MethodGet, "/suggest", nil)
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				w = httptest.NewRecorder()

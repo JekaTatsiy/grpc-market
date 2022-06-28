@@ -4,21 +4,21 @@ import (
 	"github.com/JekaTatsiy/grpc-market/http/suggest"
 )
 
-func CreateFromFile(data []byte) {
-
+func CreateFromFile(data []byte) error {
+	return nil
 }
-func CreateOne(obj suggest.Suggest) {
-
+func CreateOne(obj *suggest.Suggest) error {
+	return nil
 }
-func GetAll() {
-
+func GetAll() ([]*suggest.Suggest, error) {
+	return nil, nil
 }
-func GetOne(index int) {
-
+func GetOne(index int) (*suggest.Suggest, error) {
+	return nil, nil
 }
-func DeleteAll() {
-
+func DeleteAll() error {
+	return nil
 }
-func DeleteOne(index int) {
-
+func DeleteOne(index int) error {
+	return nil
 }
