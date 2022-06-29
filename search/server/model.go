@@ -9,13 +9,14 @@ import (
 )
 
 type Server struct {
+	
 }
 
 type GServer struct {
 	pb.UnimplementedSuggestServiceServer
 }
 
-func NewServer(port string) *Server {
+func NewServer(port, esaddr string) *Server {
 	s := &Server{}
 	lis, err := net.Listen("tcp", ":"+port)
 	if err != nil {
