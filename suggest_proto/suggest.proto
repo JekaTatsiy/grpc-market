@@ -22,7 +22,7 @@ message SuggestRequestIndex {
     int32 Index = 1 ;
 }
 message CSV {
-    string text = 1;
+    bytes text = 1;
 }
 
 message Empty{

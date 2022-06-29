@@ -3,6 +3,7 @@ package suggest
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -91,7 +92,21 @@ func Post(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 
 func Import(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		
+		b,e:=io.ReadAll(r.Body)
+		if e!=nil{
+			json.NewEncoder(w).Encode(Status{Status: e.Error()})
+			return
+		}
+	
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		status, e := grpcClient.AddFile(ctx, &pb.CSV{Text: b})
+		if e != nil {
+			json.NewEncoder(w).Encode(Status{Status: e.Error()})
+			return
+		}
+		json.NewEncoder(w).Encode(status)
 	}
 }
 

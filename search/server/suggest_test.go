@@ -52,11 +52,12 @@ var _ = Describe("HTTPSuggest", func() {
 		})
 		When("from file", func() {
 			It("Success", func() {
-				st, e := repo.AddFile(ctx, &suggProto.CSV{Text: `link1,title1,q1|q2
+				st, e := repo.AddFile(ctx, &suggProto.CSV{Text: []byte(`
+				link1,title1,q1|q2
 				link2,title2,q1|q2|q3
 				link3,title3,q1|q2
 				link4,title4,q1
-				link5,title5,q1|q2`})
+				link5,title5,q1|q2`)})
 
 				Expect(e).Should(HaveOccurred())
 				Expect(st).ShouldNot(HaveOccurred())
