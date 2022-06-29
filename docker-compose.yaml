@@ -14,11 +14,11 @@ services:
     build: search
     command: /main
     ports:
-      - 1000:1000
+      - :1000
     depends_on:
       - es
   es:
     container_name: grpc-es
     image: elasticsearch:8.2.3
     ports:
-      - 9200:9200
+      - :9200

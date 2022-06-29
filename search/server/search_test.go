@@ -1,16 +1,16 @@
-package search_test
+package server_test
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/JekaTatsiy/grpc-market/http/server"
 	sugg "github.com/JekaTatsiy/grpc-market/http/suggest"
-	repo "github.com/JekaTatsiy/grpc-market/search/search"
-	//"github.com/elastic/go-elasticsearch/v8"
-	//"github.com/elastic/go-elasticsearch/v8/esapi"
+	pkg "github.com/JekaTatsiy/grpc-market/search/server"
+	suggProto "github.com/JekaTatsiy/grpc-market/suggest_proto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/format"
@@ -34,18 +34,17 @@ func TestSearch(t *testing.T) {
 	RunSpecs(t, "Search")
 }
 
-func ExtractLinks(suggests []sugg.Suggest) []string {
+func ExtractLinks(response *suggProto.SearchResponse) []string {
 	links := []string{}
-	for _, x := range suggests {
-		links = append(links, x.LinkURL)
+	for _, x := range response.Suggests {
+		links = append(links, x.LinkUrl)
 	}
 	return links
 }
 
 var _ = Describe("Search", func() {
-
-	//es, err := elasticsearch.NewDefaultClient()
-	//Expect(err).ShouldNot(HaveOccurred())
+	repo := &pkg.GServer{}
+	ctx := context.Background()
 
 	BeforeSuite(func() {
 		NewSuggest("link1", "title1", []string{"Автомобиль", "Машина", "Ехать"})
@@ -57,25 +56,29 @@ var _ = Describe("Search", func() {
 	Context("Public functions", func() {
 		When("find", func() {
 			It("Success", func() {
-				res := repo.Find("как доехать в воронеж")
+				res, e := repo.Search(ctx, &suggProto.SearchRequest{Query: "как доехать в воронеж"})
+				Expect(e).ShouldNot(HaveOccurred())
 				Expect(ExtractLinks(res)).Should(Equal([]string{"link1"}))
 			})
 		})
 		When("find", func() {
 			It("Success", func() {
-				res := repo.Find("скоо тоит саолет")
+				res, e := repo.Search(ctx, &suggProto.SearchRequest{Query: "скоо тоит саолет"})
+				Expect(e).ShouldNot(HaveOccurred())
 				Expect(ExtractLinks(res)).Should(Equal([]string{"link3"}))
 			})
 		})
 		When("find", func() {
 			It("Success", func() {
-				res := repo.Find("dtc dthnjktnf")
+				res, e := repo.Search(ctx, &suggProto.SearchRequest{Query: "dtc dthnjktnf"})
+				Expect(e).ShouldNot(HaveOccurred())
 				Expect(ExtractLinks(res)).Should(Equal([]string{"link2"}))
 			})
 		})
 		When("find", func() {
 			It("Success", func() {
-				res := repo.Find("PUTICHESTVIE NA KORABLE")
+				res, e := repo.Search(ctx, &suggProto.SearchRequest{Query: "PUTICHESTVIE NA KORABLE"})
+				Expect(e).ShouldNot(HaveOccurred())
 				Expect(ExtractLinks(res)).Should(Equal([]string{"link4"}))
 			})
 		})
