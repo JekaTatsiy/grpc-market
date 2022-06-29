@@ -20,5 +20,10 @@ services:
   es:
     container_name: grpc-es
     image: elasticsearch:8.2.3
+    environment:
+        - "discovery.type=single-node"
+        - ELASTIC_USERNAME=elastic
+        - ELASTIC_PASSWORD=elastic
+        - xpack.security.enabled=true
     ports:
-      - :9200
+      - 9200:9200

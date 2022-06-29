@@ -12,7 +12,13 @@ func (s *GServer) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchR
 	return &pb.SearchResponse{Suggests: responses}, nil
 }
 
+
+
+
 func (s *GServer) AddOne(context.Context, *pb.SuggestRequest) (*pb.Status, error) {
+
+
+
 	stat := &pb.Status{Msg: "ok"}
 	return stat, nil
 }

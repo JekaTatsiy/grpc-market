@@ -1,5 +1,5 @@
 
-up: docker
+up: build docker
 
 down:
 	docker-compose down
