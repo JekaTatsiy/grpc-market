@@ -33,6 +33,9 @@ func GetAll(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 			json.NewEncoder(w).Encode(Status{Status: e.Error()})
 			return
 		}
+		if suggs==nil{
+			suggs=&pb.SuggestArray{}
+		}
 		json.NewEncoder(w).Encode(suggs)
 	}
 }
@@ -53,7 +56,7 @@ func Get(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
-		suggs, e := grpcClient.GetOne(ctx, &pb.SuggestRequestIndex{Index: int32(ind)})
+		suggs, e := grpcClient.GetOne(ctx, &pb.SuggestIndex{Index: int32(ind)})
 		if e != nil {
 			json.NewEncoder(w).Encode(Status{Status: e.Error()})
 			return
@@ -64,6 +67,17 @@ func Get(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 
 func Post(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		id_str := r.FormValue("id")
+		if id_str == "" {
+			json.NewEncoder(w).Encode(Status{Status: "expect id"})
+			return
+		}
+		id, e := strconv.Atoi(id_str)
+		if e != nil {
+			json.NewEncoder(w).Encode(Status{Status: "id is not a number"})
+			return
+		}
+
 		url := r.FormValue("link")
 		if url == "" {
 			json.NewEncoder(w).Encode(Status{Status: "expect url"})
@@ -74,14 +88,14 @@ func Post(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 			json.NewEncoder(w).Encode(Status{Status: "expect title"})
 			return
 		}
-		queries := r.FormValue("query")
-		if queries == "" {
+		queries := r.Form["query"]
+		if len(queries) == 0 {
 			json.NewEncoder(w).Encode(Status{Status: "expect queries"})
 			return
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
-		status, e := grpcClient.AddOne(ctx, &pb.SuggestRequest{LinkUrl: url, Title: title, Queries: []string{queries}})
+		status, e := grpcClient.AddOne(ctx, &pb.Suggest{ID: int32(id), LinkUrl: url, Title: title, Queries: queries})
 		if e != nil {
 			json.NewEncoder(w).Encode(Status{Status: e.Error()})
 			return
@@ -92,13 +106,13 @@ func Post(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 
 func Import(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		
-		b,e:=io.ReadAll(r.Body)
-		if e!=nil{
+
+		b, e := io.ReadAll(r.Body)
+		if e != nil {
 			json.NewEncoder(w).Encode(Status{Status: e.Error()})
 			return
 		}
-	
+
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 		status, e := grpcClient.AddFile(ctx, &pb.CSV{Text: b})
@@ -128,7 +142,7 @@ func DeleteOne(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
-		status, e := grpcClient.DeleteOne(ctx, &pb.SuggestRequestIndex{Index: int32(ind)})
+		status, e := grpcClient.DeleteOne(ctx, &pb.SuggestIndex{Index: int32(ind)})
 		if e != nil {
 			json.NewEncoder(w).Encode(Status{Status: e.Error()})
 			return

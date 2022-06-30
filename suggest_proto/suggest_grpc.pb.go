@@ -23,11 +23,11 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SuggestServiceClient interface {
 	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
-	AddOne(ctx context.Context, in *SuggestRequest, opts ...grpc.CallOption) (*Status, error)
+	AddOne(ctx context.Context, in *Suggest, opts ...grpc.CallOption) (*Status, error)
 	AddFile(ctx context.Context, in *CSV, opts ...grpc.CallOption) (*Status, error)
-	GetOne(ctx context.Context, in *SuggestRequestIndex, opts ...grpc.CallOption) (*SuggestResponse, error)
-	Get(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SuggestResponseArray, error)
-	DeleteOne(ctx context.Context, in *SuggestRequestIndex, opts ...grpc.CallOption) (*Status, error)
+	GetOne(ctx context.Context, in *SuggestIndex, opts ...grpc.CallOption) (*Suggest, error)
+	Get(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SuggestArray, error)
+	DeleteOne(ctx context.Context, in *SuggestIndex, opts ...grpc.CallOption) (*Status, error)
 	Delete(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Status, error)
 }
 
@@ -48,7 +48,7 @@ func (c *suggestServiceClient) Search(ctx context.Context, in *SearchRequest, op
 	return out, nil
 }
 
-func (c *suggestServiceClient) AddOne(ctx context.Context, in *SuggestRequest, opts ...grpc.CallOption) (*Status, error) {
+func (c *suggestServiceClient) AddOne(ctx context.Context, in *Suggest, opts ...grpc.CallOption) (*Status, error) {
 	out := new(Status)
 	err := c.cc.Invoke(ctx, "/suggest.SuggestService/AddOne", in, out, opts...)
 	if err != nil {
@@ -66,8 +66,8 @@ func (c *suggestServiceClient) AddFile(ctx context.Context, in *CSV, opts ...grp
 	return out, nil
 }
 
-func (c *suggestServiceClient) GetOne(ctx context.Context, in *SuggestRequestIndex, opts ...grpc.CallOption) (*SuggestResponse, error) {
-	out := new(SuggestResponse)
+func (c *suggestServiceClient) GetOne(ctx context.Context, in *SuggestIndex, opts ...grpc.CallOption) (*Suggest, error) {
+	out := new(Suggest)
 	err := c.cc.Invoke(ctx, "/suggest.SuggestService/GetOne", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -75,8 +75,8 @@ func (c *suggestServiceClient) GetOne(ctx context.Context, in *SuggestRequestInd
 	return out, nil
 }
 
-func (c *suggestServiceClient) Get(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SuggestResponseArray, error) {
-	out := new(SuggestResponseArray)
+func (c *suggestServiceClient) Get(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SuggestArray, error) {
+	out := new(SuggestArray)
 	err := c.cc.Invoke(ctx, "/suggest.SuggestService/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (c *suggestServiceClient) Get(ctx context.Context, in *Empty, opts ...grpc.
 	return out, nil
 }
 
-func (c *suggestServiceClient) DeleteOne(ctx context.Context, in *SuggestRequestIndex, opts ...grpc.CallOption) (*Status, error) {
+func (c *suggestServiceClient) DeleteOne(ctx context.Context, in *SuggestIndex, opts ...grpc.CallOption) (*Status, error) {
 	out := new(Status)
 	err := c.cc.Invoke(ctx, "/suggest.SuggestService/DeleteOne", in, out, opts...)
 	if err != nil {
@@ -107,11 +107,11 @@ func (c *suggestServiceClient) Delete(ctx context.Context, in *Empty, opts ...gr
 // for forward compatibility
 type SuggestServiceServer interface {
 	Search(context.Context, *SearchRequest) (*SearchResponse, error)
-	AddOne(context.Context, *SuggestRequest) (*Status, error)
+	AddOne(context.Context, *Suggest) (*Status, error)
 	AddFile(context.Context, *CSV) (*Status, error)
-	GetOne(context.Context, *SuggestRequestIndex) (*SuggestResponse, error)
-	Get(context.Context, *Empty) (*SuggestResponseArray, error)
-	DeleteOne(context.Context, *SuggestRequestIndex) (*Status, error)
+	GetOne(context.Context, *SuggestIndex) (*Suggest, error)
+	Get(context.Context, *Empty) (*SuggestArray, error)
+	DeleteOne(context.Context, *SuggestIndex) (*Status, error)
 	Delete(context.Context, *Empty) (*Status, error)
 	mustEmbedUnimplementedSuggestServiceServer()
 }
@@ -123,19 +123,19 @@ type UnimplementedSuggestServiceServer struct {
 func (UnimplementedSuggestServiceServer) Search(context.Context, *SearchRequest) (*SearchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
 }
-func (UnimplementedSuggestServiceServer) AddOne(context.Context, *SuggestRequest) (*Status, error) {
+func (UnimplementedSuggestServiceServer) AddOne(context.Context, *Suggest) (*Status, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddOne not implemented")
 }
 func (UnimplementedSuggestServiceServer) AddFile(context.Context, *CSV) (*Status, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddFile not implemented")
 }
-func (UnimplementedSuggestServiceServer) GetOne(context.Context, *SuggestRequestIndex) (*SuggestResponse, error) {
+func (UnimplementedSuggestServiceServer) GetOne(context.Context, *SuggestIndex) (*Suggest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOne not implemented")
 }
-func (UnimplementedSuggestServiceServer) Get(context.Context, *Empty) (*SuggestResponseArray, error) {
+func (UnimplementedSuggestServiceServer) Get(context.Context, *Empty) (*SuggestArray, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedSuggestServiceServer) DeleteOne(context.Context, *SuggestRequestIndex) (*Status, error) {
+func (UnimplementedSuggestServiceServer) DeleteOne(context.Context, *SuggestIndex) (*Status, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteOne not implemented")
 }
 func (UnimplementedSuggestServiceServer) Delete(context.Context, *Empty) (*Status, error) {
@@ -173,7 +173,7 @@ func _SuggestService_Search_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _SuggestService_AddOne_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SuggestRequest)
+	in := new(Suggest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -185,7 +185,7 @@ func _SuggestService_AddOne_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/suggest.SuggestService/AddOne",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SuggestServiceServer).AddOne(ctx, req.(*SuggestRequest))
+		return srv.(SuggestServiceServer).AddOne(ctx, req.(*Suggest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -209,7 +209,7 @@ func _SuggestService_AddFile_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _SuggestService_GetOne_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SuggestRequestIndex)
+	in := new(SuggestIndex)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -221,7 +221,7 @@ func _SuggestService_GetOne_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/suggest.SuggestService/GetOne",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SuggestServiceServer).GetOne(ctx, req.(*SuggestRequestIndex))
+		return srv.(SuggestServiceServer).GetOne(ctx, req.(*SuggestIndex))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -245,7 +245,7 @@ func _SuggestService_Get_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _SuggestService_DeleteOne_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SuggestRequestIndex)
+	in := new(SuggestIndex)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -257,7 +257,7 @@ func _SuggestService_DeleteOne_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/suggest.SuggestService/DeleteOne",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SuggestServiceServer).DeleteOne(ctx, req.(*SuggestRequestIndex))
+		return srv.(SuggestServiceServer).DeleteOne(ctx, req.(*SuggestIndex))
 	}
 	return interceptor(ctx, in, info, handler)
 }

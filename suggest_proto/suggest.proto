@@ -9,18 +9,21 @@ message SearchRequest {
 }
 
 message SearchResponse {
-    repeated SuggestResponse suggests = 1;
+    repeated Suggest suggests = 1;
 }
 
-//suggest send
-message SuggestRequest {
-    string LinkUrl = 1 ;
-    string Title = 2 ;
-    repeated string Queries = 3 ;
+//suggest 
+message Suggest {
+    int32 ID = 1;
+    string LinkUrl = 2 ;
+    string Title = 3 ;
+    repeated string Queries = 4 ;
 }
-message SuggestRequestIndex {
+
+message SuggestIndex {
     int32 Index = 1 ;
 }
+
 message CSV {
     bytes text = 1;
 }
@@ -28,18 +31,8 @@ message CSV {
 message Empty{
 }
 
-// suggest receive
-message SuggestResponseArray {
-    repeated SuggestResponse Suggests = 1 ;
-}
-
-
-message SuggestResponse {
-    int32 ID = 1;
-    string LinkUrl = 2 ;
-    string Title = 3 ;
-    repeated string Queries = 4 ;
-    bool Active = 5;
+message SuggestArray {
+    repeated Suggest Suggests = 1 ;
 }
 
 message Status {
@@ -49,13 +42,13 @@ message Status {
 service SuggestService {
     rpc Search(SearchRequest) returns (SearchResponse);
 
-    rpc AddOne(SuggestRequest) returns (Status);
+    rpc AddOne(Suggest) returns (Status);
     rpc AddFile(CSV) returns (Status);
 
-    rpc GetOne(SuggestRequestIndex) returns (SuggestResponse);
-    rpc Get(Empty) returns (SuggestResponseArray);
+    rpc GetOne(SuggestIndex) returns (Suggest);
+    rpc Get(Empty) returns (SuggestArray);
 
-    rpc DeleteOne(SuggestRequestIndex) returns (Status);
+    rpc DeleteOne(SuggestIndex) returns (Status);
     rpc Delete(Empty) returns (Status);    
 }
 
