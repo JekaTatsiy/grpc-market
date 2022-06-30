@@ -19,6 +19,7 @@ func Find(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 		query, ok := v["q"]
 		if !ok {
 			json.NewEncoder(w).Encode(suggest.Status{Status: "query not found"})
+			return
 		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)

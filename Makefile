@@ -28,7 +28,8 @@ up-test:
 run-test:
 	@docker-compose -f test/search.yaml build
 	@docker-compose -f test/search.yaml up -d 
-	@/usr/local/bin/go test github.com/JekaTatsiy/grpc-market/http/suggest --args -s 0.0.0.0:1000
+	@/usr/local/bin/go test github.com/JekaTatsiy/grpc-market/http/suggest --args -s 0.0.0.0:1000 || true
+	@/usr/local/bin/go test github.com/JekaTatsiy/grpc-market/http/search --args -s 0.0.0.0:1000 || true
 #	@docker-compose -f test/search.yaml down
 
 gotest:

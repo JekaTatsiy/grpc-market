@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  search:
+    container_name: search-t
+    build: ../search
+    command: hostname -I
+    command: /main -s 172.17.0.2:9200
+    ports:
+      - 1000:1000
+    network_mode: bridge

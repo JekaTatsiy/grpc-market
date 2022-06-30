@@ -7,15 +7,19 @@ import (
 	"testing"
 
 	"encoding/json"
+
 	server "github.com/JekaTatsiy/grpc-market/http/server"
+	"github.com/gorilla/mux"
+
+	"flag"
 
 	repo "github.com/JekaTatsiy/grpc-market/http/search"
 	sugg "github.com/JekaTatsiy/grpc-market/http/suggest"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/format"
-	"flag"
 )
+
 var searchaddr = flag.String("s", "grpc-search:1000", "adres grpc-search service")
 
 func TestHTTPSearch(t *testing.T) {
@@ -26,8 +30,9 @@ func TestHTTPSearch(t *testing.T) {
 }
 
 var _ = Describe("HTTPSearch", func() {
-
-	g := server.NewGrpcClient(*searchaddr)
+	flag.Parse()
+	//g := server.NewGrpcClient(*searchaddr)
+	g := server.NewGrpcClient("0.0.0.0:9200")
 
 	find := repo.Find(g)
 
@@ -54,6 +59,7 @@ var _ = Describe("HTTPSearch", func() {
 			It("Success", func() {
 
 				r := httptest.NewRequest(http.MethodGet, "/find/автомобиль", nil)
+				r = mux.SetURLVars(r, map[string]string{"q": "автомобиль"})
 				w := httptest.NewRecorder()
 
 				find(w, r)

@@ -3,6 +3,7 @@ package suggest
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -14,14 +15,13 @@ import (
 
 type Suggest struct {
 	ID      int      `json:"id"`
-	LinkURL string   `json:"link_url"`
+	LinkUrl string   `json:"linkUrl"`
 	Title   string   `json:"title"`
 	Queries []string `json:"queries"`
-	Active  bool     `json:"active"`
 }
 
 type Status struct {
-	Status string `json:"status"`
+	Status string `json:"Msg"`
 }
 
 func GetAll(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
@@ -37,7 +37,10 @@ func GetAll(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 		if suggs == nil {
 			suggs = &pb.SuggestArray{}
 		}
-		json.NewEncoder(w).Encode(suggs)
+		fmt.Println("len", len(suggs.Suggests))
+		fmt.Println("suggs", suggs.Suggests)
+		fmt.Println("e", e)
+		json.NewEncoder(w).Encode(suggs.Suggests)
 	}
 }
 
@@ -50,11 +53,13 @@ func Get(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 		ind_s, ok := v["id"]
 		if !ok {
 			json.NewEncoder(w).Encode(Status{Status: "id not found"})
+			return
 		}
 
 		ind, e := strconv.Atoi(ind_s)
 		if !ok {
 			json.NewEncoder(w).Encode(Status{Status: e.Error()})
+			return
 		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
