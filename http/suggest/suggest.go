@@ -26,6 +26,7 @@ type Status struct {
 
 func GetAll(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 		suggs, e := grpcClient.Get(ctx, &pb.Empty{})
@@ -33,8 +34,8 @@ func GetAll(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 			json.NewEncoder(w).Encode(Status{Status: e.Error()})
 			return
 		}
-		if suggs==nil{
-			suggs=&pb.SuggestArray{}
+		if suggs == nil {
+			suggs = &pb.SuggestArray{}
 		}
 		json.NewEncoder(w).Encode(suggs)
 	}
@@ -42,6 +43,8 @@ func GetAll(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 
 func Get(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+
 		v := mux.Vars(r)
 
 		ind_s, ok := v["id"]
@@ -67,6 +70,8 @@ func Get(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 
 func Post(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+
 		id_str := r.FormValue("id")
 		if id_str == "" {
 			json.NewEncoder(w).Encode(Status{Status: "expect id"})
@@ -106,6 +111,7 @@ func Post(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 
 func Import(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
 
 		b, e := io.ReadAll(r.Body)
 		if e != nil {
@@ -115,7 +121,14 @@ func Import(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
-		status, e := grpcClient.AddFile(ctx, &pb.CSV{Text: b})
+		status, e := grpcClient.Delete(ctx, &pb.Empty{})
+		if e != nil {
+			json.NewEncoder(w).Encode(Status{Status: e.Error()})
+			return
+		}
+		ctx, cancel = context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		status, e = grpcClient.AddFile(ctx, &pb.CSV{Text: b})
 		if e != nil {
 			json.NewEncoder(w).Encode(Status{Status: e.Error()})
 			return
@@ -126,6 +139,8 @@ func Import(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 
 func DeleteOne(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+
 		v := mux.Vars(r)
 
 		ind_s, ok := v["id"]
@@ -152,6 +167,8 @@ func DeleteOne(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 }
 func Delete(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 		status, e := grpcClient.Delete(ctx, &pb.Empty{})

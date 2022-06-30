@@ -33,5 +33,5 @@ func Find(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 }
 
 func GenRouting(r *mux.Router, grpcClient pb.SuggestServiceClient) {
-	r.HandleFunc("/find/{q:[0-9a-z]+}", Find(grpcClient)).Methods(http.MethodGet)
+	r.HandleFunc("/find/{q:.+}", Find(grpcClient)).Methods(http.MethodGet)
 }

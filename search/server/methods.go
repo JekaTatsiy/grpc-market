@@ -1,14 +1,17 @@
 package server
 
 import (
+	"bytes"
 	"context"
-	"encoding/csv"
+	gocsv "encoding/csv"
+	"strings"
 
 	pb "github.com/JekaTatsiy/grpc-market/suggest_proto"
 )
 
 func (s *GServer) Search(ctx context.Context, req *pb.SearchRequest) (*pb.SearchResponse, error) {
 	suggs := s.ESSearch(req.Query)
+
 	return &pb.SearchResponse{Suggests: suggs}, nil
 }
 
@@ -23,10 +26,24 @@ func (s *GServer) AddOne(ctx context.Context, sugg *pb.Suggest) (*pb.Status, err
 }
 
 func (s *GServer) AddFile(ctd context.Context, csv *pb.CSV) (*pb.Status, error) {
-	sugg := make([]*pb.Suggest, 0)
-
+	suggs := make([]*pb.Suggest, 0)
 	
-	e := s.ESAdd(sugg)
+	lines, err := gocsv.NewReader(bytes.NewBuffer(csv.Text)).ReadAll()
+	if err != nil {
+		return &pb.Status{Msg: err.Error()}, nil
+	}
+
+	for i, line := range lines {
+		sugg := &pb.Suggest{}
+		sugg.ID = int32(i + 1)
+		sugg.LinkUrl = line[0]
+		sugg.Title = line[1]
+		q := strings.Split(line[2], "|")
+		sugg.Queries = q
+		suggs = append(suggs, sugg)
+	}
+
+	e := s.ESAdd(suggs)
 	m := "ok"
 	if e != nil {
 		m = e.Error()

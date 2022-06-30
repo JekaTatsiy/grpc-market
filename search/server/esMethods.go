@@ -95,9 +95,7 @@ func (g *GServer) ESAdd(suggs []*pb.Suggest) error {
 		body = append(body, b...)
 		body = append(body, '\n')
 	}
-	fmt.Println("body", string(body))
 	res, e := g.ES(http.MethodPost, fmt.Sprintf("%s/_bulk", IndexName), body)
-	fmt.Println("res", string(res))
 	if e != nil {
 		return e
 	}
@@ -108,7 +106,6 @@ func (g *GServer) ESAdd(suggs []*pb.Suggest) error {
 	}
 	status, ok := m["errors"]
 	if !ok {
-		fmt.Println("m", m)
 		return errors.New("field ERRORS not found")
 	}
 	if status.(bool) {
@@ -122,7 +119,6 @@ func (g *GServer) ESDeleteOne(ind int32) error {
 	if e != nil {
 		return e
 	}
-	fmt.Println(string(response))
 
 	var fields map[string]interface{}
 	e = json.Unmarshal(response, &fields)
@@ -145,7 +141,6 @@ func (g *GServer) ESGetOne(ind int32) (*pb.Suggest, error) {
 	if e != nil {
 		return nil, e
 	}
-	fmt.Println(string(response))
 
 	var fields map[string]interface{}
 	e = json.Unmarshal(response, &fields)
@@ -179,7 +174,6 @@ func (g *GServer) ESGet() ([]*pb.Suggest, error) {
 	if e != nil {
 		return nil, e
 	}
-	fmt.Println(string(res))
 
 	var hits_ map[string]interface{}
 	e = json.Unmarshal(res, &hits_)
@@ -195,8 +189,8 @@ func (g *GServer) ESGet() ([]*pb.Suggest, error) {
 		return nil, errors.New("expect field \"hits\"(2)")
 	}
 	suggs := make([]*pb.Suggest, 0)
-	o := &pb.Suggest{}
 	for _, x := range objs {
+		o := &pb.Suggest{}
 		hit, ok := x.(map[string]interface{})
 		if !ok {
 			return nil, errors.New("cant convert \"hit\" to map[string]interface{}")
@@ -232,6 +226,43 @@ func (g *GServer) ESSearch(q string) []*pb.Suggest {
 		}
 	  }
 	}`, q))
-	g.ES(http.MethodGet, fmt.Sprintf("%s/_search", IndexName), body)
-	return nil
+	res, e := g.ES(http.MethodGet, fmt.Sprintf("%s/_search", IndexName), body)
+	fmt.Println(string(res))
+
+	var hits_ map[string]interface{}
+	e = json.Unmarshal(res, &hits_)
+	if e != nil {
+		return nil
+	}
+	hits, ok := hits_["hits"].(map[string]interface{})
+	if !ok {
+		return nil
+	}
+	objs, ok := hits["hits"].([]interface{})
+	if !ok {
+		return nil
+	}
+	suggs := make([]*pb.Suggest, 0)
+	for _, x := range objs {
+		o := &pb.Suggest{}
+		hit, ok := x.(map[string]interface{})
+		if !ok {
+			return nil
+		}
+		source, ok := hit["_source"].(map[string]interface{})
+		if !ok {
+			return nil
+		}
+		id, _ := strconv.Atoi(hit["_id"].(string))
+		o.ID = int32(id)
+		o.LinkUrl = source["LinkUrl"].(string)
+		o.Title = source["Title"].(string)
+		query := source["Query"].([]interface{})
+		for _, q := range query {
+			o.Queries = append(o.Queries, q.(string))
+		}
+		suggs = append(suggs, o)
+	}
+
+	return suggs
 }
