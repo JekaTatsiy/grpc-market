@@ -14,7 +14,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/format"
+	"flag"
 )
+var searchaddr = flag.String("s", "grpc-search:1000", "adres grpc-search service")
 
 func TestHTTPSearch(t *testing.T) {
 	format.MaxLength = 0
@@ -25,7 +27,7 @@ func TestHTTPSearch(t *testing.T) {
 
 var _ = Describe("HTTPSearch", func() {
 
-	g := server.NewGrpcClient("1000")
+	g := server.NewGrpcClient(*searchaddr)
 
 	find := repo.Find(g)
 

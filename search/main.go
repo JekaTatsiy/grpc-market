@@ -1,10 +1,17 @@
 package main
 
-import "github.com/JekaTatsiy/grpc-market/search/server"
+import (
+	"flag"
+	"fmt"
+
+	"github.com/JekaTatsiy/grpc-market/search/server"
+)
 
 var searchport string = "1000"
-var esaddr string = "grpc-es:9200"
+var esaddr = flag.String("s", "grpc-es:9200", "adres es-search service")
 
 func main() {
-	_ = server.NewServer(searchport, esaddr)
+	flag.Parse()
+	fmt.Println("elastic adres ", *esaddr)
+	_ = server.NewServer(searchport, *esaddr)
 }

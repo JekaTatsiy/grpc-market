@@ -4,16 +4,20 @@ import (
 	"bytes"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"encoding/json"
 
+	"flag"
 	server "github.com/JekaTatsiy/grpc-market/http/server"
 	repo "github.com/JekaTatsiy/grpc-market/http/suggest"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/format"
 )
+
+var searchaddr = flag.String("s", "grpc-search:1000", "adres grpc-search service")
 
 func TestHTTPSuggest(t *testing.T) {
 	format.MaxLength = 0
@@ -23,9 +27,22 @@ func TestHTTPSuggest(t *testing.T) {
 }
 
 var _ = Describe("HTTPSuggest", func() {
-	
-	g := server.NewGrpcClient("1000")
-	
+
+	suggest1 := url.Values{
+		"id":    []string{"1"},
+		"link":  []string{"abc"},
+		"title": []string{"NAME"},
+		"query": []string{"a", "b", "c"}}
+	suggest2 := url.Values{
+		"id":    []string{"2"},
+		"link":  []string{"xyz"},
+		"title": []string{"ITEM"},
+		"query": []string{"x", "y", "z"}}
+
+	flag.Parse()
+	//g := server.NewGrpcClient(*searchaddr)
+	g := server.NewGrpcClient(":1000")
+
 	getall := repo.GetAll(g)
 	get := repo.Get(g)
 	post := repo.Post(g)
@@ -41,11 +58,9 @@ var _ = Describe("HTTPSuggest", func() {
 	Context("Public functions", func() {
 		When("add one", func() {
 			It("Success", func() {
-				payload := &bytes.Buffer{}
-				payload.WriteString("id=1&link=abc&title=NAME&query=a&query=b&query=c")
-
-				r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
-				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				r := httptest.NewRequest(http.MethodGet, "/suggest", nil)
+				r.Header.Set("Content-Type", "maultipart/form-data")
+				r.Form = suggest1
 				w := httptest.NewRecorder()
 
 				post(w, r)
@@ -61,11 +76,9 @@ var _ = Describe("HTTPSuggest", func() {
 
 		When("get one", func() {
 			It("Success", func() {
-				payload := &bytes.Buffer{}
-				payload.WriteString("id=1&link=abc&title=NAME&query=a&query=b&query=c")
-
-				r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
-				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				r := httptest.NewRequest(http.MethodGet, "/suggest", nil)
+				r.Header.Set("Content-Type", "maultipart/form-data")
+				r.Form = suggest1
 				w := httptest.NewRecorder()
 
 				post(w, r)
@@ -76,7 +89,7 @@ var _ = Describe("HTTPSuggest", func() {
 				Expect(res.Status).Should(Equal("ok"))
 
 				r = httptest.NewRequest(http.MethodGet, "/suggest/1", nil)
-				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				r.Header.Set("Content-Type", "maultipart/form-data")
 				w = httptest.NewRecorder()
 
 				get(w, r)
@@ -95,11 +108,9 @@ var _ = Describe("HTTPSuggest", func() {
 
 		When("get all", func() {
 			It("Success", func() {
-				payload := &bytes.Buffer{}
-
-				payload.WriteString("id=1&link=abc&title=NAME&query=a&query=b&query=c")
-				r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
-				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				r := httptest.NewRequest(http.MethodGet, "/suggest", nil)
+				r.Header.Set("Content-Type", "maultipart/form-data")
+				r.Form = suggest1
 				w := httptest.NewRecorder()
 				post(w, r)
 				res := &repo.Status{}
@@ -107,11 +118,10 @@ var _ = Describe("HTTPSuggest", func() {
 				Expect(e).ShouldNot(HaveOccurred())
 				Expect(res.Status).Should(Equal("ok"))
 
-				payload = &bytes.Buffer{}
+				r = httptest.NewRequest(http.MethodGet, "/suggest", nil)
+				r.Header.Set("Content-Type", "maultipart/form-data")
+				r.Form = suggest2
 
-				payload.WriteString("id=2&link=xyz&title=ITEM&query=x&query=y&query=z")
-				r = httptest.NewRequest(http.MethodGet, "/suggest", payload)
-				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				w = httptest.NewRecorder()
 				post(w, r)
 				res = &repo.Status{}
@@ -140,18 +150,20 @@ var _ = Describe("HTTPSuggest", func() {
 			It("Success", func() {
 				payload := &bytes.Buffer{}
 
-				payload.WriteString("id=1&link=abc&title=NAME&query=a&query=b&query=c")
 				r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
-				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				r.Header.Set("Content-Type", "maultipart/form-data")
+				r.Form = suggest1
+
 				w := httptest.NewRecorder()
 
 				post(w, r)
 
 				payload = &bytes.Buffer{}
 
-				payload.WriteString("id=2&link=xyz&title=ITEM&query=x&query=y&query=z")
 				r = httptest.NewRequest(http.MethodGet, "/suggest", payload)
-				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				r.Header.Set("Content-Type", "maultipart/form-data")
+				r.Form = suggest2
+
 				w = httptest.NewRecorder()
 
 				post(w, r)
@@ -163,7 +175,7 @@ var _ = Describe("HTTPSuggest", func() {
 
 				//delete one
 				r = httptest.NewRequest(http.MethodGet, "/suggest", nil)
-				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				r.Header.Set("Content-Type", "maultipart/form-data")
 				w = httptest.NewRecorder()
 
 				deleteone(w, r)
@@ -174,7 +186,7 @@ var _ = Describe("HTTPSuggest", func() {
 				Expect(res.Status).Should(Equal("ok"))
 
 				r = httptest.NewRequest(http.MethodGet, "/suggest", nil)
-				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				r.Header.Set("Content-Type", "maultipart/form-data")
 				w = httptest.NewRecorder()
 
 				delete(w, r)
@@ -222,11 +234,9 @@ var _ = Describe("HTTPSuggest", func() {
 
 		When("add one without args", func() {
 			It("Success", func() {
-				payload := &bytes.Buffer{}
-				payload.WriteString("")
 
-				r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
-				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				r := httptest.NewRequest(http.MethodGet, "/suggest", nil)
+				r.Header.Set("Content-Type", "maultipart/form-data")
 				w := httptest.NewRecorder()
 
 				post(w, r)
@@ -235,7 +245,7 @@ var _ = Describe("HTTPSuggest", func() {
 				e := json.Unmarshal(w.Body.Bytes(), &res)
 
 				Expect(e).ShouldNot(HaveOccurred())
-				Expect(res.Status).Should(Equal("no args"))
+				Expect(res.Status).Should(Equal("expect id"))
 
 			})
 		})

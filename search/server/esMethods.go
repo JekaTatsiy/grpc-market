@@ -22,7 +22,7 @@ const login = "elastic"
 const password = "elastic"
 
 func (g *GServer) ES(method, path string, body []byte) ([]byte, error) {
-	client := &http.Client{}
+	client := &http.Client{Timeout: time.Second}
 	req, e := http.NewRequest(method, fmt.Sprintf("http://%s/%s", g.ESaddr, path), bytes.NewBuffer(body))
 	req.Header.Add("Content-Type", "application/json")
 	if e != nil {
