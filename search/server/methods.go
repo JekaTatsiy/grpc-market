@@ -2,51 +2,61 @@ package server
 
 import (
 	"context"
+	"encoding/csv"
 
 	pb "github.com/JekaTatsiy/grpc-market/suggest_proto"
 )
 
-func (s *GServer) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchResponse, error) {
-	responses := make([]*pb.SuggestResponse, 0)
-	responses = append(responses, &pb.SuggestResponse{ID: 1, LinkUrl: "l", Title: "t", Queries: []string{"a", "b"}, Active: true})
-	return &pb.SearchResponse{Suggests: responses}, nil
+func (s *GServer) Search(ctx context.Context, req *pb.SearchRequest) (*pb.SearchResponse, error) {
+	suggs := s.ESSearch(req.Query)
+	return &pb.SearchResponse{Suggests: suggs}, nil
 }
 
-
-
-
-func (s *GServer) AddOne(context.Context, *pb.SuggestRequest) (*pb.Status, error) {
-
-
-
-	stat := &pb.Status{Msg: "ok"}
-	return stat, nil
-}
-
-func (s *GServer) AddFile(context.Context, *pb.CSV) (*pb.Status, error) {
-	stat := &pb.Status{Msg: "ok"}
-	return stat, nil
-}
-
-func (s *GServer) GetOne(context.Context, *pb.SuggestRequestIndex) (*pb.SuggestResponse, error) {
-	r := &pb.SuggestResponse{ID: 0, LinkUrl: "l", Title: "t", Queries: []string{"a"}, Active: true}
-
-	return r, nil
-}
-
-func (s *GServer) Get(context.Context, *pb.Empty) (*pb.SuggestResponseArray, error) {
-	r := &pb.SuggestResponseArray{
-		Suggests: []*pb.SuggestResponse{{ID: 1, LinkUrl: "l", Title: "t", Queries: []string{"a"}, Active: true}},
+func (s *GServer) AddOne(ctx context.Context, sugg *pb.Suggest) (*pb.Status, error) {
+	e := s.ESAdd([]*pb.Suggest{sugg})
+	m := "ok"
+	if e != nil {
+		m = e.Error()
 	}
-	return r, nil
+	stat := &pb.Status{Msg: m}
+	return stat, nil
 }
 
-func (s *GServer) DeleteOne(context.Context, *pb.SuggestRequestIndex) (*pb.Status, error) {
-	stat := &pb.Status{Msg: "ok"}
+func (s *GServer) AddFile(ctd context.Context, csv *pb.CSV) (*pb.Status, error) {
+	sugg := make([]*pb.Suggest, 0)
+
+	
+	e := s.ESAdd(sugg)
+	m := "ok"
+	if e != nil {
+		m = e.Error()
+	}
+	stat := &pb.Status{Msg: m}
 	return stat, nil
+}
+
+func (s *GServer) GetOne(ctx context.Context, i *pb.SuggestIndex) (*pb.Suggest, error) {
+	r, e := s.ESGetOne(i.Index)
+	return r, e
+}
+
+func (s *GServer) Get(ctx context.Context, em *pb.Empty) (*pb.SuggestArray, error) {
+	r, e := s.ESGet()
+	arr := &pb.SuggestArray{Suggests: r}
+	return arr, e
+}
+
+func (s *GServer) DeleteOne(ctx context.Context, i *pb.SuggestIndex) (*pb.Status, error) {
+	e := s.ESDeleteOne(i.Index)
+	m := "ok"
+	if e != nil {
+		m = e.Error()
+	}
+	return &pb.Status{Msg: m}, nil
 }
 
 func (s *GServer) Delete(context.Context, *pb.Empty) (*pb.Status, error) {
-	stat := &pb.Status{Msg: "ok"}
-	return stat, nil
+	s.ESDeleteIndex()
+	s.ESCreateIndex()
+	return &pb.Status{Msg: "ok"}, nil
 }

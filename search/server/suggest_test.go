@@ -30,19 +30,19 @@ var _ = Describe("HTTPSuggest", func() {
 	Context("Public functions", func() {
 		When("add one / get one", func() {
 			It("Success", func() {
-				st, e := repo.AddOne(ctx, &suggProto.SuggestRequest{LinkUrl: "l1", Title: "t1", Queries: []string{"a1", "a2"}})
+				st, e := repo.AddOne(ctx, &suggProto.Suggest{LinkUrl: "l1", Title: "t1", Queries: []string{"a1", "a2"}})
 				Expect(e).ShouldNot(HaveOccurred())
 				Expect(st).ShouldNot(HaveOccurred())
 				Expect(st.Msg).Should(Equal("ok"))
 
-				sg, e := repo.GetOne(ctx, &suggProto.SuggestRequestIndex{Index: 1})
+				sg, e := repo.GetOne(ctx, &suggProto.SuggestIndex{Index: 1})
 				Expect(e).ShouldNot(HaveOccurred())
 				Expect(sg.Title).Should(Equal("t1"))
 			})
 		})
 		When("get if empty", func() {
 			It("Success", func() {
-				_, e := repo.GetOne(ctx, &suggProto.SuggestRequestIndex{Index: 1})
+				_, e := repo.GetOne(ctx, &suggProto.SuggestIndex{Index: 1})
 				Expect(e).Should(HaveOccurred())
 
 				sg, e := repo.Get(ctx, &suggProto.Empty{})
@@ -70,19 +70,19 @@ var _ = Describe("HTTPSuggest", func() {
 		})
 		When("delete", func() {
 			It("Success", func() {
-				st, e := repo.AddOne(ctx, &suggProto.SuggestRequest{LinkUrl: "l1", Title: "t1", Queries: []string{"a1", "a2"}})
+				st, e := repo.AddOne(ctx, &suggProto.Suggest{LinkUrl: "l1", Title: "t1", Queries: []string{"a1", "a2"}})
 				Expect(e).Should(HaveOccurred())
 				Expect(st).ShouldNot(HaveOccurred())
 				Expect(st.Msg).Should(Equal("ok"))
 
-				st, e = repo.AddOne(ctx, &suggProto.SuggestRequest{LinkUrl: "l2", Title: "t2", Queries: []string{"a3", "a4"}})
+				st, e = repo.AddOne(ctx, &suggProto.Suggest{LinkUrl: "l2", Title: "t2", Queries: []string{"a3", "a4"}})
 				Expect(e).Should(HaveOccurred())
 				Expect(st).ShouldNot(HaveOccurred())
 				Expect(st.Msg).Should(Equal("ok"))
 
 				Expect(e).ShouldNot(HaveOccurred())
 
-				st, e = repo.DeleteOne(ctx, &suggProto.SuggestRequestIndex{Index: 1})
+				st, e = repo.DeleteOne(ctx, &suggProto.SuggestIndex{Index: 1})
 				Expect(e).ShouldNot(HaveOccurred())
 				Expect(st).ShouldNot(HaveOccurred())
 				Expect(st.Msg).Should(Equal("ok"))
@@ -92,12 +92,12 @@ var _ = Describe("HTTPSuggest", func() {
 				Expect(len(sg.Suggests)).Should(Equal(1))
 				Expect(sg.Suggests[0].Title).Should(Equal("t2"))
 
-				st, e = repo.DeleteOne(ctx, &suggProto.SuggestRequestIndex{Index: 1})
+				st, e = repo.DeleteOne(ctx, &suggProto.SuggestIndex{Index: 1})
 				Expect(e).ShouldNot(HaveOccurred())
 				Expect(st).ShouldNot(HaveOccurred())
 				Expect(st.Msg).Should(Equal("ok"))
 
-				st, e = repo.AddOne(ctx, &suggProto.SuggestRequest{LinkUrl: "l1", Title: "t1", Queries: []string{"a1", "a2"}})
+				st, e = repo.AddOne(ctx, &suggProto.Suggest{LinkUrl: "l1", Title: "t1", Queries: []string{"a1", "a2"}})
 				Expect(e).ShouldNot(HaveOccurred())
 
 				st, e = repo.Delete(ctx, &suggProto.Empty{})

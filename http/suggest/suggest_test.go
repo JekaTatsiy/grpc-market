@@ -42,7 +42,7 @@ var _ = Describe("HTTPSuggest", func() {
 		When("add one", func() {
 			It("Success", func() {
 				payload := &bytes.Buffer{}
-				payload.WriteString("link=abc&title=NAME&query=a&query=b&query=c")
+				payload.WriteString("id=1&link=abc&title=NAME&query=a&query=b&query=c")
 
 				r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -62,7 +62,7 @@ var _ = Describe("HTTPSuggest", func() {
 		When("get one", func() {
 			It("Success", func() {
 				payload := &bytes.Buffer{}
-				payload.WriteString("link=abc&title=NAME&query=a&query=b&query=c")
+				payload.WriteString("id=1&link=abc&title=NAME&query=a&query=b&query=c")
 
 				r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -97,7 +97,7 @@ var _ = Describe("HTTPSuggest", func() {
 			It("Success", func() {
 				payload := &bytes.Buffer{}
 
-				payload.WriteString("link=abc&title=NAME&query=a&query=b&query=c")
+				payload.WriteString("id=1&link=abc&title=NAME&query=a&query=b&query=c")
 				r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				w := httptest.NewRecorder()
@@ -109,7 +109,7 @@ var _ = Describe("HTTPSuggest", func() {
 
 				payload = &bytes.Buffer{}
 
-				payload.WriteString("link=xyz&title=ITEM&query=x&query=y&query=z")
+				payload.WriteString("id=2&link=xyz&title=ITEM&query=x&query=y&query=z")
 				r = httptest.NewRequest(http.MethodGet, "/suggest", payload)
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				w = httptest.NewRecorder()
@@ -140,7 +140,7 @@ var _ = Describe("HTTPSuggest", func() {
 			It("Success", func() {
 				payload := &bytes.Buffer{}
 
-				payload.WriteString("link=abc&title=NAME&query=a&query=b&query=c")
+				payload.WriteString("id=1&link=abc&title=NAME&query=a&query=b&query=c")
 				r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				w := httptest.NewRecorder()
@@ -149,7 +149,7 @@ var _ = Describe("HTTPSuggest", func() {
 
 				payload = &bytes.Buffer{}
 
-				payload.WriteString("link=xyz&title=ITEM&query=x&query=y&query=z")
+				payload.WriteString("id=2&link=xyz&title=ITEM&query=x&query=y&query=z")
 				r = httptest.NewRequest(http.MethodGet, "/suggest", payload)
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				w = httptest.NewRecorder()
