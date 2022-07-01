@@ -33,7 +33,7 @@
             "tokenizer": {
                 "group_tokenizer": {
                     "type": "ngram",
-                    "min_gram": 2,
+                    "min_gram": 3,
                     "max_gram": 4,
                     "token_chars": [
                         "letter",
@@ -45,7 +45,7 @@
                 "prefix_filter": {
                     "type": "edge_ngram",
                     "min_gram": 2,
-                    "max_gram": 20
+                    "max_gram": 2
                 }
             },
             "char_filter": {

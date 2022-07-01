@@ -14,6 +14,7 @@ import (
 
 func Find(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
 		v := mux.Vars(r)
 
 		query, ok := v["q"]

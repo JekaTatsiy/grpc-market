@@ -115,25 +115,12 @@ func (g *GServer) ESAdd(suggs []*pb.Suggest) error {
 }
 
 func (g *GServer) ESDeleteOne(ind int32) error {
-	response, e := g.ES(http.MethodDelete, fmt.Sprintf("%s/_doc/%d", IndexName, ind), nil)
+	_, e := g.ES(http.MethodDelete, fmt.Sprintf("%s/_doc/%d", IndexName, ind), nil)
 	if e != nil {
 		return e
 	}
+	return nil
 
-	var fields map[string]interface{}
-	e = json.Unmarshal(response, &fields)
-	if e != nil {
-		return e
-	}
-	result, ok := fields["result"]
-	if !ok {
-		return errors.New("expect field \"result\"")
-	}
-	if result == "deleted" {
-		return nil
-	} else {
-		return errors.New("result not delete")
-	}
 }
 
 func (g *GServer) ESGetOne(ind int32) (*pb.Suggest, error) {
@@ -219,15 +206,14 @@ func (g *GServer) ESSearch(q string) []*pb.Suggest {
 		"query": {
 		"bool": {
 		  "should": [
-			{"match": {"query": {"query": "%[1]s","analyzer": "keyboard"}}},
-			{"match": {"query": {"query": "%[1]s","analyzer": "translit"}}}
+			{"match": {"Query": {"query": "%[1]s","analyzer": "keyboard"}}},
+			{"match": {"Query": {"query": "%[1]s","analyzer": "translit"}}}
 		  ],
 		  "minimum_should_match": 1
 		}
 	  }
 	}`, q))
 	res, e := g.ES(http.MethodGet, fmt.Sprintf("%s/_search", IndexName), body)
-	fmt.Println(string(res))
 
 	var hits_ map[string]interface{}
 	e = json.Unmarshal(res, &hits_)

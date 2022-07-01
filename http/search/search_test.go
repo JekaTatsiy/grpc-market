@@ -1,10 +1,11 @@
 package search_test
 
 import (
-	"bytes"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
+	"time"
 
 	"encoding/json"
 
@@ -31,19 +32,23 @@ func TestHTTPSearch(t *testing.T) {
 
 var _ = Describe("HTTPSearch", func() {
 	flag.Parse()
+	g := server.NewGrpcClient("0.0.0.0:1000")
 	//g := server.NewGrpcClient(*searchaddr)
-	g := server.NewGrpcClient("0.0.0.0:9200")
 
 	find := repo.Find(g)
 
 	BeforeSuite(func() {
 		post := sugg.Post(g)
-		payload := &bytes.Buffer{}
-		payload.WriteString("link=abc&title=NAME&query=автомобиль")
-		r := httptest.NewRequest(http.MethodGet, "/suggest", payload)
-		r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		r := httptest.NewRequest(http.MethodGet, "/suggest", nil)
+		r.Form = url.Values{
+			"id":    []string{"1"},
+			"link":  []string{"abc"},
+			"title": []string{"NAME"},
+			"query": []string{"автомобиль"}}
+		r.Header.Set("Content-Type", "maultipart/form-data")
 		w := httptest.NewRecorder()
 		post(w, r)
+		time.Sleep(1000 * time.Millisecond)
 
 	})
 
@@ -63,11 +68,12 @@ var _ = Describe("HTTPSearch", func() {
 				w := httptest.NewRecorder()
 
 				find(w, r)
-
-				suggests := make([]sugg.Suggest, 0)
+				suggests := &struct {
+					Suggests []sugg.Suggest `json:"suggests"`
+				}{}
 				e := json.Unmarshal(w.Body.Bytes(), &suggests)
 				Expect(e).ShouldNot(HaveOccurred())
-				Expect(len(suggests) > 0).Should(BeTrue())
+				Expect(len(suggests.Suggests)).Should(Equal(1))
 
 			})
 		})

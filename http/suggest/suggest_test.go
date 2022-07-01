@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
+	"time"
 
 	"encoding/json"
 
@@ -134,6 +135,8 @@ var _ = Describe("HTTPSuggest", func() {
 				Expect(e).ShouldNot(HaveOccurred())
 				Expect(res.Status).Should(Equal("ok"))
 
+				time.Sleep(1000 * time.Millisecond)
+
 				r = httptest.NewRequest(http.MethodGet, "/suggest", nil)
 				w = httptest.NewRecorder()
 				getall(w, r)
@@ -225,6 +228,8 @@ var _ = Describe("HTTPSuggest", func() {
 
 				Expect(e).ShouldNot(HaveOccurred())
 				Expect(res.Status).Should(Equal("ok"))
+
+				time.Sleep(1000 * time.Millisecond)
 
 				r = httptest.NewRequest(http.MethodGet, "/suggest", nil)
 				w = httptest.NewRecorder()

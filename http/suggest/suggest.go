@@ -3,7 +3,6 @@ package suggest
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -37,9 +36,6 @@ func GetAll(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 		if suggs == nil {
 			suggs = &pb.SuggestArray{}
 		}
-		fmt.Println("len", len(suggs.Suggests))
-		fmt.Println("suggs", suggs.Suggests)
-		fmt.Println("e", e)
 		json.NewEncoder(w).Encode(suggs.Suggests)
 	}
 }
