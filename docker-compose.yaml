@@ -26,4 +26,4 @@ services:
         - ELASTIC_PASSWORD=elastic
         - xpack.security.enabled=true
     ports:
-      - 9200:9200
+      - :9200

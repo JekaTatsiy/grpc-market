@@ -40,6 +40,6 @@ run-test-search:
 	@echo --- SEARCH TEST END ---
 
 
-run-test:
+run-test: build
 	make run-test-http -i
 	make run-test-search -i
