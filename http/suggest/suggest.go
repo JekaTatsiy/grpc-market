@@ -36,7 +36,7 @@ func GetAll(grpcClient pb.SuggestServiceClient) http.HandlerFunc {
 		if suggs == nil {
 			suggs = &pb.SuggestArray{}
 		}
-		json.NewEncoder(w).Encode(suggs.Suggests)
+		json.NewEncoder(w).Encode(suggs)
 	}
 }
 
